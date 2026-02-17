@@ -74,7 +74,7 @@ int main()
 
     // Bad idea, but with generic pointers we can push data of any type onto the stack
     int x = 1337;
-    push(st, (void *)a); // Can push ints onto the stack as well by type casting it to void *
+    push(st, (void *)x); // Can push ints onto the stack as well by type casting it to void *
     int *ptr = malloc(sizeof(int));
     *ptr = 1024;
     push(st, ptr);
