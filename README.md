@@ -1,4 +1,4 @@
-# AKLang Runtime System
+# Interpreted Language Runtime System
 
 A dynamic runtime system and memory management implementation in C, building toward an interpreted programming language.
 
