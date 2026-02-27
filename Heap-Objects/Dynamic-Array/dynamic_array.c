@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "dynamic_array.h"
+#include "Heap-Objects/Dynamic-Array/dynamic_array.h"
 
 void append(obj_t *obj, obj_t *new_obj)
 {
@@ -21,10 +21,12 @@ void append(obj_t *obj, obj_t *new_obj)
         arr->capacity = 2 * arr->capacity;
     }
     arr->objects[arr->size++] = new_obj;
+    increment_refCount(new_obj);
+
     return;
 }
 
-obj_t *get_array_obj(obj_t *obj, int index)
+obj_t *get_array_obj(obj_t *obj, unsigned long index)
 {
     if (obj == NULL || obj->kind != ARRAY)
     {
@@ -35,10 +37,13 @@ obj_t *get_array_obj(obj_t *obj, int index)
     {
         return NULL;
     }
-    return arr->objects[index];
+    obj_t *return_obj = arr->objects[index];
+    increment_refCount(return_obj);
+
+    return return_obj;
 }
 
-void set_array_obj(obj_t *obj, int index, obj_t *new_obj)
+void set_array_obj(obj_t *obj, unsigned long index, obj_t *new_obj)
 {
     if (obj == NULL || obj->kind != ARRAY || new_obj == NULL)
     {
@@ -49,6 +54,10 @@ void set_array_obj(obj_t *obj, int index, obj_t *new_obj)
     {
         return;
     }
+    obj_t *old_obj = arr->objects[index];
+    decrement_refCount(old_obj);
     arr->objects[index] = new_obj;
+    increment_refCount(new_obj);
+
     return;
 }

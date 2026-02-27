@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "object.h"
-#include "../Dynamic-Array/dynamic_array.h"
+#include "Heap-Objects/Primitive-Objects/object.h"
 
 obj_t *create_int(int value)
 {
@@ -13,6 +12,7 @@ obj_t *create_int(int value)
     }
     obj->kind = INTEGER;
     obj->data.a_int = value;
+    obj->ref_ct = 0;
 
     return obj;
 }
@@ -26,6 +26,7 @@ obj_t *create_float(float value)
     }
     obj->kind = FLOAT;
     obj->data.a_float = value;
+    obj->ref_ct = 0;
 
     return obj;
 }
@@ -40,6 +41,7 @@ obj_t *create_string(char *value)
     obj->kind = STRING;
     obj->data.a_str = malloc(sizeof(strlen(value) + 1) * sizeof(char *));
     strcpy(obj->data.a_str, value);
+    obj->ref_ct = 0;
 
     return obj;
 }
@@ -68,7 +70,26 @@ obj_t *create_array(size_t capacity)
         free(arr);
         return NULL;
     }
+    obj->ref_ct = 0;
+
     return obj;
+}
+
+obj_t *reassign_object(obj_t *old_obj, obj_t *new_obj)
+{
+    if (new_obj == NULL)
+    {
+        if (old_obj != NULL)
+            decrement_refCount(old_obj);
+        return NULL;
+    }
+    increment_refCount(new_obj);
+    if (old_obj != NULL)
+    {
+        decrement_refCount(old_obj);
+    }
+
+    return new_obj;
 }
 
 void print(obj_t *obj)
@@ -93,7 +114,7 @@ void print(obj_t *obj)
     case ARRAY:
     {
         darray *arr = obj->data.a_arr;
-        for (int i = 0; i < arr->size; i++)
+        for (unsigned long i = 0; i < arr->size; i++)
         {
             print(arr->objects[i]);
         }
